@@ -21,3 +21,5 @@ class DemoActivity : AppCompatActivity() {
 finish()
 ```
 
+## Activity 生命周期
+

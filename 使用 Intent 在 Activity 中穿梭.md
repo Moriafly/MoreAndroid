@@ -69,8 +69,8 @@ btn1.setOnClickListener {
 
 ```kotlin
 btn1.setOnClickListener {
-    val intent = Intent("com.example.demo.ACTION_START")
-    intent.addCategory("com.example.demo.MY_CATEGORY")
+    val intent = Intent(Intent.ACTION_VIEW)
+    intent.data = Uri.parse("https://www.baidu.com")
     startActivity(intent)
 }
 ```
