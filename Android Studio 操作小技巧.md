@@ -4,3 +4,7 @@
 
 - [x]  `Change font size (Zoom) with Ctrl+Mouse Wheel`
 
+#### 主题
+
+推荐 Visual Studio Code Dark Plus Theme
+
