@@ -1,4 +1,4 @@
-Google 更加推荐使用 Kotlin 来编写 Android 应用。未来我觉得华为鸿蒙也可能用 Kotlin。
+Google 更加推荐使用 Kotlin 来编写 Android 应用。
 
 | 时间         | 排名 | 占有率 |
 | ------------ | ---- | ------ |
