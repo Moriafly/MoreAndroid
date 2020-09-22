@@ -1,2 +1,2 @@
-# android-learning
-安卓开发学习资料
+# Android-Learning 文档
+> An awesome project.
