@@ -4,12 +4,12 @@ OpenVPN 采集与传输小组
 
 # SSH 远程登录手册
 
-SSH ( Secure Shell ) 用于远程登录云服务器 (Elastic Compute Service, 简称 *ECS*)
+SSH ( Secure Shell ) 用于远程登录云服务器 (Elastic Compute Service, 简称 ECS)
 
 ## Windows 平台安装 OpenSSH
 简单安装方式：
 
-1. 系统要求：Windows 10 1809 及以上版本
+1. 系统要求：`Windows 10 1809` 及以上版本
 2. 打开设置，选择应用，点击应用和功能项中按钮【可选功能】，添加功能，安装 OpenSSH 服务器
 
 参考：https://docs.microsoft.com/zh-cn/windows-server/administration/openssh/openssh_install_firstuse
@@ -18,7 +18,7 @@ Linux 平台（一般自带 OpenSSH）
 
 ## 远程登录
 
-以管理员身份运行 Windows PowerShell（或者其他终端，如 Windwos Terminal），输入
+以管理员身份运行 `Windows PowerShell`（或者其他终端，如 `Windwos Terminal`），输入
 ```
 Add-WindowsCapability -Online -Name OpenSSH-Client
 ```
@@ -32,14 +32,15 @@ RestartNeeded : False
 ```
 ssh root@47.103.83.146 -p 22
 ```
-说明
+参数说明
 ```
 root 远程服务器用户名，可替换成其他
 @ 后面 ip 是远程服务器的公网 ip
 -p 22 是默认的，可以不填
 ```
 如有提问，则输入 yes，再输入密码
-登录成功
+登录成功：
+
 ```
 欢迎使用 Alibaba Cloud Linux 2 等保合规镜像
 ```
@@ -69,8 +70,6 @@ sudo yum --enablerepo=extras install epel-release
 ```
 sudo yum repolist
 ```
-
-![image-20201016104205880](C:\Users\24568\Documents\GitHub\mqtt-learning\image-20201016104205880.png)
 
 安装 openvpn 2.4.9 版本
 
@@ -115,7 +114,7 @@ vim vars
 
 
 命令
-## 初始化 pki
+## 初始化 pki （公钥基础设施）
 ```bash
 ./easyrsa init-pki
 ```
@@ -128,15 +127,17 @@ init-pki complete; you may now create a CA or requests.
 Your newly created PKI dir is: /usr/share/easy-rsa/3.0.8/pki
 ```
 
-## 创建 ca
+## 创建 CA （第三方证书）
 
 ```
 ./easyrsa build-ca
 ```
 
+`创建时后加 nopass 表示不加密 就不会提示 Enter PEM pass phrase，这里设置了密码为 123456，后面创建服务端和客户端时选择了无密码。`
+
 提示：
 
-```
+```bash
 Note: using Easy-RSA configuration from: /usr/share/easy-rsa/3.0.8/vars
 Using SSL: openssl OpenSSL 1.0.2k-fips  26 Jan 2017
 
@@ -170,7 +171,7 @@ Your new CA certificate file for publishing is at:
 
 提示：
 
-```
+```bash
 Note: using Easy-RSA configuration from: /usr/share/easy-rsa/3.0.8/vars
 Using SSL: openssl OpenSSL 1.0.2k-fips  26 Jan 2017
 Generating a 2048 bit RSA private key
@@ -200,7 +201,7 @@ key: /usr/share/easy-rsa/3.0.8/pki/private/server.key
 
 提示：
 
-```
+```bash
 Note: using Easy-RSA configuration from: /usr/share/easy-rsa/3.0.8/vars
 Using SSL: openssl OpenSSL 1.0.2k-fips  26 Jan 2017
 
@@ -238,7 +239,7 @@ Certificate created at: /usr/share/easy-rsa/3.0.8/pki/issued/server.crt
 ./easyrsa gen-dh
 ```
 
-比较漫长。
+创建  Diffie-Hellman，确保 key 穿越不安全网络的命令，比较漫长。
 
 提示：
 
@@ -254,7 +255,7 @@ DH parameters of size 2048 created at /usr/share/easy-rsa/3.0.8/pki/dh.pem
 
 提示：
 
-```
+```bash
 Note: using Easy-RSA configuration from: /usr/share/easy-rsa/3.0.8/vars
 Using SSL: openssl OpenSSL 1.0.2k-fips  26 Jan 2017
 Generating a 2048 bit RSA private key
@@ -294,80 +295,56 @@ key: /usr/share/easy-rsa/3.0.8/pki/private/client.key
  cp /usr/share/easy-rsa/3.0.8/pki/private/server.key keys/ # 复制 server.key
  cp /usr/share/easy-rsa/3.0.8/pki/issued/server.crt keys/ # 复制 server.crt
  cp /usr/share/easy-rsa/3.0.8/pki/private/client.key keys/ # 复制 client.key
- 
+ cp /usr/share/easy-rsa/3.0.8/pki/issued/client.crt keys/ # 复制 client.crt
 ```
 
-
-
-
-
-# OpenVPN 服务端部署
-
-创建 PKI（公钥基础设施）
-
-```
-./easyrsa init-pki
-```
-
-创建 CA（第三方证书）
-
-```
-./easyrsa build-ca
-```
-
-1. 创建时nopass表示不加密 就不会提示Enter PEM pass phrase
-2. 例：[root@check1 3.0.3]# ./easyrsa build-ca nopass
-
-
+复制 server.conf 模板到 openvpn 文件夹
 
 ```bash
-cp /etc/openvpn/easy-rsa/3.0.8/pki/ca.crt /etc/openvpn/server/
-cp /etc/openvpn/easy-rsa/3.0.8/pki/issued/server.crt /etc/openvpn/server/
-cp /etc/openvpn/easy-rsa/3.0.8/pki/private/server.key /etc/openvpn/server/
-cp /etc/openvpn/easy-rsa/3.0.8/pki/dh.pem /etc/openvpn/server/
-cp /etc/openvpn/easy-rsa/3.0.8/pki/ta.key /etc/openvpn/server/
+cp /usr/share/doc/openvpn-2.4.9/sample/sample-config-files/server.conf /etc/openvpn/
 ```
 
-
-
-- 配置证书密钥
-
-  ```bash
-  cd /etc/openvpn/easy-rsa/
-  ./easyrsa init-pki
-  ./easyrsa build-ca nopass
-  ./easyrsa build-server-full server nopass
-  ./easyrsa build-client-full client1 nopass
-  ./easyrsa build-client-full client2 nopass
-  ./easyrsa gen-dh
-  openvpn --genkey --secret ta.key
-  ```
-
-![image-20201016110053615](C:\Users\24568\Documents\GitHub\mqtt-learning\image-20201016110053615.png)
-
-创建服务端证书
-
-![image-20201016110202904](C:\Users\24568\Documents\GitHub\mqtt-learning\image-20201016110202904.png)
-
-签约服务端证书
-
-然后输入build-ca时设置的那个密码
-
-\#输入yes确认信息
-
-![image-20201016110326148](C:\Users\24568\Documents\GitHub\mqtt-learning\image-20201016110326148.png)
-
-创建  Diffie-Hellman，确保 key 穿越不安全网络的命令
-
-`时间有点长`
-
-![image-20201016110443199](C:\Users\24568\Documents\GitHub\mqtt-learning\image-20201016110443199.png)
-
-common name:
+编辑 server.conf（部分设置）
 
 ```
-myName
+proto tcp # 修改为 tcp 协议，或者用 udp
 ```
+
+## 设置 ta.key
+
+在 keys 文件夹下
+
+```
+openvpn --genkey --secret ta.key
+```
+
+这时再查看 keys 文件夹下：
+
+```
+ca.crt  client.crt  client.key  dh.pem  server.crt  server.key  ta.key
+```
+
+## 启动 openvpn
+
+```
+openvpn --daemon --config server.conf
+```
+
+检查 OpenVPN 是否打开成功
+
+```bash
+netstat -lntup | grep 1194 # 检查 1194 端口是否打开
+```
+
+如果出现
+
+```bash
+tcp        0      0 0.0.0.0:1194            0.0.0.0:*               LISTEN      4161/openvpn
+```
+
+说明 OpenVPN 打开成功。
+
+
 
 
 
