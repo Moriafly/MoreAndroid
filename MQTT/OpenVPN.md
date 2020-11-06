@@ -324,6 +324,31 @@ openvpn --genkey --secret ta.key
 ca.crt  client.crt  client.key  dh.pem  server.crt  server.key  ta.key
 ```
 
+### iptables 设置 nat 规则和打开路由转发
+
+```bash
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j MASQUERADE
+iptables -vnL -t nat
+```
+
+编辑
+
+```bash
+vim /etc/sysctl.conf
+```
+
+修改成：
+
+```bash
+net.ipv4.ip_forward = 1
+```
+
+保存
+
+```
+sysctl -p
+```
+
 ## 启动 openvpn
 
 ```
@@ -344,133 +369,9 @@ tcp        0      0 0.0.0.0:1194            0.0.0.0:*               LISTEN      
 
 说明 OpenVPN 打开成功。
 
+如果开启后没有打开1194 端口，说明开启服务失败，可能是配置文件有错，也有可能是权限不够，查询日志。
 
 
-
-
-# 创建客户端证书
-
-第一步：进入root目录新建client文件夹，文件夹可随意命名，然后拷贝前面解压得到的easy-ras文件夹到client文件夹,进入下列目录
-
-```bash
-# mkdir client
-# cp /etc/openvpn/easy-rsa client/
-# cd client/easy-rsa/easyrsa3/
-```
-
-第二步：初始化
-
-[root@along easyrsa3]# ./easyrsa init-pki //需输入yes 确定
-
-③ 创建客户端key及生成证书（记住生成是自己客户端登录输入的密码）
-
-[root@along easyrsa3]# ./easyrsa gen-req along //名字自己定义
-
-![img](https://bbsmax.ikafan.com/static/L3Byb3h5L2h0dHBzL2ltYWdlczIwMTcuY25ibG9ncy5jb20vYmxvZy8xMjE2NDk2LzIwMTgwMS8xMjE2NDk2LTIwMTgwMTIzMTI1MTI0MTE1LTE3MTMzODI2NTMucG5n.jpg)
-
-④ 将的到的qingliu.req导入然后签约证书
-
-a. 进入到/etc/openvpn/easy-rsa/easyrsa3/
-
-[root@along easyrsa3]# cd /etc/openvpn/easy-rsa/easyrsa3/
-
-b. 导入req
-
-[root@along easyrsa3]# ./easyrsa import-req /root/client/easy-rsa/easyrsa3/pki/reqs/along.req along
-
-![img](https://bbsmax.ikafan.com/static/L3Byb3h5L2h0dHBzL2ltYWdlczIwMTcuY25ibG9ncy5jb20vYmxvZy8xMjE2NDk2LzIwMTgwMS8xMjE2NDk2LTIwMTgwMTIzMTI1MTI0Mzk3LTEzNTA4NzI5MzYucG5n.jpg)
-
-c. 签约证书
-
-[root@along easyrsa3]# ./easyrsa sign client along
-
-![img](https://bbsmax.ikafan.com/static/L3Byb3h5L2h0dHBzL2ltYWdlczIwMTcuY25ibG9ncy5jb20vYmxvZy8xMjE2NDk2LzIwMTgwMS8xMjE2NDk2LTIwMTgwMTIzMTI1MTI0OTI4LTE1MzY2MDU5NTYucG5n.jpg)
-
-//这里生成client所以必须为client，along要与之前导入名字一致
-
-上面签约证书跟server类似，就不截图了，但是期间还是要输入CA的密码
-
-### 5、把服务器端必要文件放到etc/openvpn/ 目录下
-
-ca的证书、服务端的证书、秘钥
-
-[root@along ~]# cp /etc/openvpn/easy-rsa/easyrsa3/pki/**ca.crt** /etc/openvpn/
-
-[root@along ~]# cp /etc/openvpn/easy-rsa/easyrsa3/pki/private/**server.key** /etc/openvpn/
-
-
-
-[root@along ~]# cp /etc/openvpn/easy-rsa/easyrsa3/pki/issued/**server.crt** /etc/openvpn/
-
-
-
-[root@along ~]# cp /etc/openvpn/easy-rsa/easyrsa3/pki/**dh.pem** /etc/openvpn/
-
-### 6、把客户端必要文件放到root/openvpn/ 目录下
-
-客户端的证书、秘钥
-
-[root@along ~]# cp /etc/openvpn/easy-rsa/easyrsa3/pki/ca.crt /root/client/
-
-[root@along ~]# cp /etc/openvpn/easy-rsa/easyrsa3/pki/issued/along.crt /root/client/
-
-[root@along ~]# cp /root/client/easy-rsa/easyrsa3/pki/private/along.key /root/client
-
-### 7、为服务端编写配置文件
-
-（1）当你安装好了openvpn时候，他会提供一个server配置的文件例子，在/usr/share/doc/openvpn-2.3.2/sample/sample-config-files 下会有一个server.conf文件，我们将这个文件复制到/etc/openvpn
-
-[root@along ~]# rpm -ql openvpn |grep server.conf
-
-![img](https://bbsmax.ikafan.com/static/L3Byb3h5L2h0dHBzL2ltYWdlczIwMTcuY25ibG9ncy5jb20vYmxvZy8xMjE2NDk2LzIwMTgwMS8xMjE2NDk2LTIwMTgwMTIzMTI1MTI1MTYyLTQ3NDI3MzE1My5wbmc=.jpg)
-
-[root@along ~]# cp /usr/share/doc/openvpn-2.4.4/sample/sample-config-files/server.conf /etc/openvpn
-
-（2）修改配置文件
-
-[root@along ~]# vim /etc/openvpn/server.conf
-
-[root@along ~]# grep '^[^#|;]' /etc/openvpn/server.conf 修改的地方如下：
-
-```
-local 0.0.0.0     #监听地址port 1194     #监听端口proto tcp     #监听协议dev tun     #采用路由隧道模式ca /etc/openvpn/ca.crt      #ca证书路径cert /etc/openvpn/server.crt       #服务器证书key /etc/openvpn/server.key  # This file should be kept secret 服务器秘钥dh /etc/openvpn/dh.pem     #密钥交换协议文件server 10.8.0.0 255.255.255.0     #给客户端分配地址池，注意：不能和VPN服务器内网网段有相同ifconfig-pool-persist ipp.txtpush "redirect-gateway def1 bypass-dhcp"      #给网关push "dhcp-option DNS 8.8.8.8"        #dhcp分配dnsclient-to-client       #客户端之间互相通信keepalive 10 120       #存活时间，10秒ping一次,120 如未收到响应则视为断线comp-lzo      #传输数据压缩max-clients 100     #最多允许 100 客户端连接user openvpn       #用户group openvpn      #用户组persist-keypersist-tunstatus /var/log/openvpn/openvpn-status.loglog         /var/log/openvpn/openvpn.logverb 3
-```
-
-
-
-
-
-每个项目都会由一大堆介绍,上述修改，openvpn提供的server.conf已经全部提供，我们只需要去掉前面的注释#，然后修改我们自己的有关配置
-
-（3）配置后的设置
-
-[root@along ~]# mkdir /var/log/openvpn
-
-[root@along ~]# chown -R openvpn.openvpn /var/log/openvpn/
-
-[root@along ~]# chown -R openvpn.openvpn /etc/openvpn/*
-
-### 8、iptables 设置 nat 规则和打开路由转发
-
-[root@along ~]# iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j MASQUERADE
-
-[root@along ~]# iptables -vnL -t nat
-
-[root@along ~]# vim /etc/sysctl.conf //打开路由转发
-
-net.ipv4.ip_forward = 1
-
-[root@along ~]# sysctl -p
-
-### 9、开启openvpn 服务
-
-[root@along ~]# openvpn /etc/openvpn/server.conf 开启服务
-
-[root@along ~]# ss -nutl |grep 1194
-
-![img](https://bbsmax.ikafan.com/static/L3Byb3h5L2h0dHBzL2ltYWdlczIwMTcuY25ibG9ncy5jb20vYmxvZy8xMjE2NDk2LzIwMTgwMS8xMjE2NDk2LTIwMTgwMTIzMTI1MTI1MzUwLTEzNDQwODY5NzIucG5n.jpg)
-
-如果开启后没有打开1194 端口，说明开启服务失败，可能是配置文件有错，也有可能是权限不够，自己查询日志解决。
 
 # OpenVPN 客户端部署 Windows 端
 
