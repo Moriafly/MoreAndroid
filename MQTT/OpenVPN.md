@@ -1,5 +1,7 @@
 
 
+OpenVPN 采集与传输小组
+
 # SSH 远程登录手册
 
 SSH ( Secure Shell ) 用于远程登录云服务器 (Elastic Compute Service, 简称 *ECS*)
@@ -8,7 +10,8 @@ SSH ( Secure Shell ) 用于远程登录云服务器 (Elastic Compute Service, �
 简单安装方式：
 
 1. 系统要求：Windows 10 1809 及以上版本
-2. 打开设置，选择应用，点击应用和功能项中按钮【可选功能】，添加功能，安装 OpenSSH 服务器![image-20200927093928002](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20200927093928002.png)
+2. 打开设置，选择应用，点击应用和功能项中按钮【可选功能】，添加功能，安装 OpenSSH 服务器
+
 参考：https://docs.microsoft.com/zh-cn/windows-server/administration/openssh/openssh_install_firstuse
 
 Linux 平台（一般自带 OpenSSH）
