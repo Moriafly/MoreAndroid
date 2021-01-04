@@ -1,0 +1,99 @@
+{
+    "result": 100,
+    "data": {
+        "album": {
+            "count": 2,
+            "itemlist": [{
+                "docid": "8036",
+                "id": "8036",
+                "mid": "000y5gq7449K9I",
+                "name": "第二天堂",
+                "pic": "http://y.gtimg.cn/music/photo_new/T002R180x180M000000y5gq7449K9I_1.jpg",
+                "singer": "林俊杰"
+            }, {
+                "docid": "36160",
+                "id": "36160",
+                "mid": "002g6zv02X7SNi",
+                "name": "JJ陆",
+                "pic": "http://y.gtimg.cn/music/photo_new/T002R180x180M000002g6zv02X7SNi_1.jpg",
+                "singer": "林俊杰"
+            }],
+            "name": "专辑",
+            "order": 2,
+            "type": 3
+        },
+        "mv": {
+            "count": 2,
+            "itemlist": [{
+                "docid": "1651909",
+                "id": "1651909",
+                "mid": "004gOwZQ2COhmC",
+                "name": "交换余生",
+                "singer": "林俊杰",
+                "vid": "g00346llfnm"
+            }, {
+                "docid": "1661479",
+                "id": "1661479",
+                "mid": "002BCMEN2Jfbw6",
+                "name": "幸存者",
+                "singer": "林俊杰",
+                "vid": "d00340s80y5"
+            }],
+            "name": "MV",
+            "order": 3,
+            "type": 4
+        },
+        "singer": {
+            "count": 2,
+            "itemlist": [{
+                "docid": "4286",
+                "id": "4286",
+                "mid": "001BLpXF2DyJe2",
+                "name": "林俊杰",
+                "pic": "http://y.gtimg.cn/music/photo_new/T001R150x150M000001BLpXF2DyJe2_5.jpg",
+                "singer": "林俊杰"
+            }, {
+                "docid": "2086017",
+                "id": "2086017",
+                "mid": "0042Daf33GueUE",
+                "name": "林俊杰FM89757电台",
+                "pic": "http://y.gtimg.cn/music/photo_new/T001R150x150M0000042Daf33GueUE_1.jpg",
+                "singer": "林俊杰FM89757电台"
+            }],
+            "name": "歌手",
+            "order": 1,
+            "type": 2
+        },
+        "song": {
+            "count": 4,
+            "itemlist": [{
+                "docid": "101555425",
+                "id": "101555425",
+                "mid": "004295Et37taLD",
+                "name": "可惜没如果",
+                "singer": "林俊杰"
+            }, {
+                "docid": "5063375",
+                "id": "5063375",
+                "mid": "002CxSLT41D5tD",
+                "name": "修炼爱情",
+                "singer": "林俊杰"
+            }, {
+                "docid": "102388808",
+                "id": "102388808",
+                "mid": "002kADrZ01iC2L",
+                "name": "那些你很冒险的梦",
+                "singer": "林俊杰"
+            }, {
+                "docid": "9063002",
+                "id": "9063002",
+                "mid": "004TXEXY2G2c7C",
+                "name": "江南",
+                "singer": "林俊杰"
+            }],
+            "name": "单曲",
+            "order": 0,
+            "type": 1
+        }
+    }
+}

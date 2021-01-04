@@ -1,16 +1,24 @@
 
 
-OpenVPN 采集与传输小组
+# OpenVPN 采集与传输小组
 
-# SSH 远程登录手册
+文档更新时间 2020年12月11日
 
-SSH ( Secure Shell ) 用于远程登录云服务器 (Elastic Compute Service, 简称 ECS)
+# SSH 远程登录
+
+SSH ( Secure Shell ) 用于远程登录云服务器 (Elastic Compute Service, 简称 ECS)。
+
+Secure Shell ( SSH ) 是由 IETF ( The Internet Engineering Task Force )  制定的建立在应用层基础上的安全网络协议。它是专为远程登录会话 ( 甚至可以用Windows远程登录 Linux 服务器进行文件互传 ) 和其他网络服务提供安全性的协议，可有效弥补网络中的漏洞。通过 SSH，可以把所有传输的数据进行加密，也能够防止 DNS 欺骗和 IP 欺骗。还有一个额外的好处就是传输的数据是经过压缩的，所以可以加快传输的速度。目前已经成为 Linux 系统的标准配置。
+
+一般默认 SSH 端口是 22 号。
 
 ## Windows 平台安装 OpenSSH
 简单安装方式：
 
 1. 系统要求：`Windows 10 1809` 及以上版本
 2. 打开设置，选择应用，点击应用和功能项中按钮【可选功能】，添加功能，安装 OpenSSH 服务器
+
+![image-20201211152448732](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20201211152448732.png)
 
 参考：https://docs.microsoft.com/zh-cn/windows-server/administration/openssh/openssh_install_firstuse
 
@@ -29,6 +37,9 @@ Online        : True
 RestartNeeded : False
 ```
 则表明 SSH 可用
+
+### SSH 用法
+
 ```
 ssh root@47.103.83.146 -p 22
 ```
@@ -38,12 +49,16 @@ root 远程服务器用户名，可替换成其他
 @ 后面 ip 是远程服务器的公网 ip
 -p 22 是默认的，可以不填
 ```
-如有提问，则输入 yes，再输入密码
+![image-20201211153137092](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20201211153137092.png)
+
+如有提问，则输入 yes，再输入密码（输入密码时候是不可见的）
 登录成功：
 
 ```
 欢迎使用 Alibaba Cloud Linux 2 等保合规镜像
 ```
+![image-20201211153224668](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20201211153224668.png)
+
 # OpenVPN 服务端的搭建
 
 | 主机           | 操作系统              | 角色           |
@@ -51,7 +66,7 @@ root 远程服务器用户名，可替换成其他
 | 阿里云服务器   | Alibaba Cloud Linux 2 | OpenVPN 服务器 |
 | 本地笔记本电脑 | Windows 10            | OpenVPN 客户端 |
 
-## 安装 OpenVPN 和 easy-rsa
+## * 安装 OpenVPN 和 easy-rsa
 
 安装 EPEL(Extra Packages for Enterprise Linux)
 
@@ -92,7 +107,10 @@ sudo yum install easy-rsa
 ```
 /usr/share/easy-rsa/3.0.8
 ```
+![image-20201211153349139](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20201211153349139.png)
+
 下面有三个
+
 ```
 easyrsa  openssl-easyrsa.cnf  x509-types
 ```
@@ -111,6 +129,8 @@ cp /usr/share/doc/easy-rsa-3.0.8/vars.example vars
 vim vars
 ```
 修改其中的某些选项（不改也可以）
+
+![image-20201211153456877](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20201211153456877.png)
 
 
 命令
@@ -371,77 +391,6 @@ tcp        0      0 0.0.0.0:1194            0.0.0.0:*               LISTEN      
 
 如果开启后没有打开1194 端口，说明开启服务失败，可能是配置文件有错，也有可能是权限不够，查询日志。
 
-
-
-# OpenVPN 客户端部署 Windows 端
-
-Windows 平台 V2.4.6 下载地址
-
-https://swupdate.openvpn.org/community/releases/openvpn-install-2.4.6-I602.exe
-
-安装记得勾选上 `EasyRSA 2 Certificate Management Scripts`
-
-
-
-将之前存放服务器在 `/root/users/client1` 中的四个文件下载到客户端，存放在`C:\Program Files\OpenVPN\config` 目录下
-
-
-
-```
-client
-dev tun
-proto udp
-remote 10.0.8.28 1194  # 主要这里修改成自己 server ip  端口
-resolv-retry infinite
-nobind
-persist-key
-persist-tun
-ca ca.crt               # 这里需要证书 ca.crt
-cert vpn.crt
-key  vpn.key
-auth md5
-cipher AES-256-CBC
-tls-auth ta.key 1
-comp-lzo
-verb 3
-```
-
-
-
-# 结果
-
-![image-20201023153420626](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20201023153420626.png)
-
-进入路径
-
-```
-cd /etc/openvpn/easy-rsa/3.0.8
-```
-
-#### CA 证书
-
-3.0.8/pki/ca.crt
-
-#### 服务端证书
-
-3.0.8/pki/issued/server.crt
-
-#### 客户端证书
-
-3.0.8/pki/issued/client1.crt
-
-#### 客户端秘钥
-
-3.0.8/ta.key
-
-#### DH 文件
-
-3.0.8/pki/dh.pem
-
-# 配置 vars
-
-主要是证书相关
-
 # 验证 CA 和 server.crt 文件正确性
 
 ![image-20201030151106397](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20201030151106397.png)
@@ -457,63 +406,23 @@ vim server.conf
 配置：
 
 ```bash
-# OpenVPN Port, Protocol and the Tun
+local 0.0.0.0
 port 1194
 proto tcp
 dev tun
-
-# OpenVPN Server Certificate - CA, server key and certificate
-ca /etc/openvpn/server/ca.crt
-cert /etc/openvpn/server/hakase-server.crt
-key /etc/openvpn/server/hakase-server.key
-
-#DH and CRL key
-dh /etc/openvpn/server/dh.pem
-#注意本文没有跳过了丢消证书的检测
-#crl-verify /etc/openvpn/server/crl.pem
-
-# Network Configuration - Internal network
-# Redirect all Connection through OpenVPN Server
-server 10.10.1.0 255.255.255.0
-push "redirect-gateway def1"
-
-# Using the DNS from https://dns.watch
-push "dhcp-option DNS 84.200.69.80"
-push "dhcp-option DNS 84.200.70.40"
-
-#Enable multiple client to connect with same Certificate key
-duplicate-cn
-
-# TLS Security
-cipher AES-256-CBC
-tls-version-min 1.2
-tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-AES-128-GCM-SHA256:TLS-DHE-RSA-WITH-AES-128-CBC-SHA256
-auth SHA512
-auth-nocache
-
-# Other Configuration
-keepalive 20 60
-persist-key
-persist-tun
-comp-lzo yes
-daemon
-user nobody
-group nobody
-
-# OpenVPN Log
-log-append /var/log/openvpn.log
-verb 3
+ca keys/ca.crt
+cert keys/server.crt
+key keys/server.key
+dh keys/dh.pem
+server 10.1.0.0 255.255.255.0
+ifconfig-pool-persist ipp.txt
 ```
-
-
 
 # 启动 Service
 
 ```
 service openvpn restart
 ```
-
-
 
 
 
@@ -527,11 +436,157 @@ scp -r root@118.190.204.203:/etc/openvpn/easy-rsa/3.0.8 C:/vpn
 
 再输入密码，进行下载
 
+# OpenVPN 客户端部署 Windows 端
+
+Windows 平台 V2.4.6 下载地址
+
+https://swupdate.openvpn.org/community/releases/openvpn-install-2.4.6-I602.exe
+
+安装记得勾选上 `EasyRSA 2 Certificate Management Scripts`
+
+将之前存放服务器在 `/root/users/client1` 中的四个文件下载到客户端，存放在`C:\Program Files\OpenVPN\config` 目录下
+
+配置客户端 Config
+
+```
+##############################################
+# Sample client-side OpenVPN 2.0 config file #
+# for connecting to multi-client server.     #
+#                                            #
+# This configuration can be used by multiple #
+# clients, however each client should have   #
+# its own cert and key files.                #
+#                                            #
+# On Windows, you might want to rename this  #
+# file so it has a .ovpn extension           #
+##############################################
+
+# Specify that we are a client and that we
+# will be pulling certain config file directives
+# from the server.
+client
+
+# Use the same setting as you are using on
+# the server.
+# On most systems, the VPN will not function
+# unless you partially or fully disable
+# the firewall for the TUN/TAP interface.
+;dev tap
+dev tun
+
+# Windows needs the TAP-Win32 adapter name
+# from the Network Connections panel
+# if you have more than one.  On XP SP2,
+# you may need to disable the firewall
+# for the TAP adapter.
+;dev-node MyTap
+
+# Are we connecting to a TCP or
+# UDP server?  Use the same setting as
+# on the server.
+proto tcp
+;proto udp
+
+# The hostname/IP and port of the server.
+# You can have multiple remote entries
+# to load balance between the servers.
+remote 47.103.83.146 1194
+;remote my-server-2 1194
+
+# Choose a random host from the remote
+# list for load-balancing.  Otherwise
+# try hosts in the order specified.
+;remote-random
+
+# Keep trying indefinitely to resolve the
+# host name of the OpenVPN server.  Very useful
+# on machines which are not permanently connected
+# to the internet such as laptops.
+resolv-retry infinite
+
+# Most clients don't need to bind to
+# a specific local port number.
+nobind
+
+# Downgrade privileges after initialization (non-Windows only)
+;user nobody
+;group nobody
+
+# Try to preserve some state across restarts.
+persist-key
+persist-tun
+
+# If you are connecting through an
+# HTTP proxy to reach the actual OpenVPN
+# server, put the proxy server/IP and
+# port number here.  See the man page
+# if your proxy server requires
+# authentication.
+;http-proxy-retry # retry on connection failures
+;http-proxy [proxy server] [proxy port #]
+
+# Wireless networks often produce a lot
+# of duplicate packets.  Set this flag
+# to silence duplicate packet warnings.
+;mute-replay-warnings
+
+# SSL/TLS parms.
+# See the server config file for more
+# description.  It's best to use
+# a separate .crt/.key file pair
+# for each client.  A single ca
+# file can be used for all clients.
+ca ca.crt
+cert client.crt
+key client.key
+
+# Verify server certificate by checking that the
+# certicate has the correct key usage set.
+# This is an important precaution to protect against
+# a potential attack discussed here:
+#  http://openvpn.net/howto.html#mitm
+#
+# To use this feature, you will need to generate
+# your server certificates with the keyUsage set to
+#   digitalSignature, keyEncipherment
+# and the extendedKeyUsage to
+#   serverAuth
+# EasyRSA can do this for you.
+remote-cert-tls server
+
+# If a tls-auth key is used on the server
+# then every client must also have the key.
+tls-auth ta.key 1
+
+# Select a cryptographic cipher.
+# If the cipher option is used on the server
+# then you must also specify it here.
+# Note that v2.4 client/server will automatically
+# negotiate AES-256-GCM in TLS mode.
+# See also the ncp-cipher option in the manpage
+cipher AES-256-CBC
+
+# Enable compression on the VPN link.
+# Don't enable this unless it is also
+# enabled in the server config file.
+comp-lzo
+
+# Set log file verbosity.
+verb 3
+
+# Silence repeating messages
+;mute 20
+
+```
+
+# 启动 OpenVPN GUI
+
+![image-20201211160024075](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20201211160024075.png)
+
+用管理员身份运行，链接成功
+
+![连接成功](C:\Users\24568\AppData\Roaming\Typora\typora-user-images\image-20201211151403071.png)
 
 
 
-
-
-
-
-
+# 路由器设置 OpenVPN
