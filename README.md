@@ -1,14 +1,8 @@
 # 什么是 MoreAndroid ?
 
-Moriafly Android 学习文档
+MoreAndroid 是 Moriafly（酷安不要糖醋放椒盐，DsoMusic、椒盐音乐作者）的 Android 学习文档。
 
-# 链接
-
-Moriafly 主页：[https://moriafly.xyz](https://moriafly.xyz)
-
-KartJim 博客：[https://kartjim.top](https://kartjim.top)
-
-
+网上的资源参差不齐，希望本文档可以给想自学安卓的初学者一点微薄的帮助。
 
 文档搭建来自：docsify
 
